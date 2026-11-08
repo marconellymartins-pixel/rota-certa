@@ -44,6 +44,9 @@ li:last-child{border:0}
 .rodape{margin-top:auto;border-top:1px solid var(--yel);padding:18px 2px 8px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .rodape .rb{display:flex;align-items:center;gap:10px}.rodape .rb div{display:flex;flex-direction:column;line-height:1.2}.rodape .rc{display:flex;flex-direction:column;text-align:right;gap:2px;font-size:14px}.rodape .mut{font-size:13px}
 @media (min-width:900px){body{max-width:720px}.tabs{max-width:696px}#fab{right:calc(50vw - 344px)}}
+.pg{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 12px}.pg i{display:block;height:100%;background:var(--yel);border-radius:99px}.pg.r i{background:var(--red)}.pg.ok i{background:var(--grn)}
+.sec{background:var(--card);border:1px solid var(--yel);color:var(--ink);margin-bottom:14px}
+@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact}:root,:root[data-theme]{--bg:#fff;--card:#fff;--ink:#000;--mut:#444;--line:#bbb;--grn:#0a7a55;--red:#b3261e}html,body{background:#fff!important}body{padding:0;max-width:none;min-height:0}.tabs,#fab,.noprint,.road,#tema,.rodape{display:none!important}.card{box-shadow:none;break-inside:avoid}}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -56,10 +59,18 @@ li:last-child{border:0}
 <button role="tab" id="t3" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M3 20h13M14 9h2l3 3v6a1.5 1.5 0 0 1-3 0v-3h-2M7 8h5"/></svg><span>Combustível</span></button>
 <button role="tab" id="t4" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L4 16.7 7.3 20l5.3-5.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Manutenção</span></button>
 <button role="tab" id="t2" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span>Histórico</span></button>
+<button role="tab" id="t5" aria-selected="false" hidden></button>
 </div>
 
 <section id="p0">
 <div class="card" id="malerta" hidden></div>
+<div class="card" id="metas"><b><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>Metas de ganho</b>
+<div id="mbars" style="margin-top:10px"></div>
+<button class="del" id="medit">Definir metas</button>
+<div id="mform" hidden>
+<div class="row2"><div><label for="md">Meta diária (R$)</label><input id="md" type="number" inputmode="decimal" step="0.01" min="0"></div>
+<div><label for="mm">Meta mensal (R$)</label><input id="mm" type="number" inputmode="decimal" step="0.01" min="0"></div></div>
+<button class="go" id="msv">Salvar metas</button></div></div>
 <div class="card"><div class="mut" id="plabel">Lucro no mês</div><div class="big" id="lucro">R$ 0,00</div>
 <div class="grid" style="margin-top:14px">
 <div><span class="mut"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l5-5 4 4 7-7M15 8h5v5"/></svg>Ganhos</span><b id="gan">–</b></div>
@@ -76,6 +87,7 @@ li:last-child{border:0}
 <div><span class="mut"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 17h6a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h5"/></svg>Ganho por km</span><b id="gkm">–</b></div>
 </div></div>
 <div class="card"><b>Últimos 7 dias</b> <span class="mut">verde ganhos, vermelho despesas</span><div class="bars" id="bars"></div></div>
+<button class="go sec" id="brel" style="margin-top:0">Relatório mensal (imprimir ou PDF)</button>
 <div class="card" id="dest" hidden></div>
 </section>
 
@@ -102,6 +114,8 @@ li:last-child{border:0}
 </section>
 
 <section id="p2" hidden>
+<div class="card"><label for="hmes" style="margin-top:0">Filtrar por mês</label><select id="hmes"></select><p class="mut" id="htot" style="margin:10px 0 0"></p>
+<button class="go sec" id="brel2" style="margin-top:12px;margin-bottom:0">Relatório do mês selecionado</button></div>
 <div class="card"><ul id="lista"></ul></div>
 <div class="card"><b>Backup dos dados</b>
 <p class="mut">Guarde uma cópia dos seus registros ou leve para outro aparelho. Ao importar, nada do que já existe é apagado.</p>
@@ -156,6 +170,15 @@ li:last-child{border:0}
 </div>
 </section>
 
+<section id="p5" hidden>
+<div class="card"><b id="rtit">Relatório</b>
+<div class="noprint"><label for="hrm">Mês</label><select id="hrm"></select></div>
+<div class="grid" id="rres" style="margin-top:14px"></div></div>
+<div class="card"><b>Receitas por categoria</b> <span class="mut" id="rgt"></span><ul id="rg" style="margin-top:8px"></ul></div>
+<div class="card"><b>Despesas por categoria</b> <span class="mut" id="rdt"></span><ul id="rd" style="margin-top:8px"></ul></div>
+<button class="go noprint" id="rimp">Imprimir ou salvar em PDF</button>
+<button class="go sec noprint" id="rvolta" style="margin-top:10px">Voltar ao Resumo</button>
+</section>
 <footer class="rodape">
 <div class="rb"><svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f5b800"/><path d="M12 28 L15 5 H17 L20 28Z" fill="#17262e"/><path d="M16 8v4M16 15v4M16 22v3" stroke="#f5b800" stroke-width="1.6"/></svg><div><b>Rota Certa</b><span class="mut">Versão V1.0</span></div></div>
 <div class="rc"><span>© 2026 Rota Certa</span><span class="mut">Todos os direitos reservados.</span></div>
@@ -173,9 +196,9 @@ var OPC={g:["Corrida app","Corrida particular","Gorjeta"],d:["Combustível","Man
 function opcoes(){$("desc").innerHTML=OPC[$("tipo").value].map(function(o){return "<option>"+o+"</option>"}).join("");var dd=$("tipo").value==="d";$("gextra").hidden=dd;$("kmwrap").hidden=dd;$("vrow").style.gridTemplateColumns=dd?"1fr":""}
 $("tipo").onchange=opcoes;opcoes();$("data").value=hoje();
 
-function aba(n){$("fab").hidden=n===1;window.scrollTo(0,0);for(var i=0;i<5;i++){$("p"+i).hidden=i!==n;$("t"+i).setAttribute("aria-selected",i===n)}
-if(n===0){resumo();alertas();destaques()}if(n===2)historico();if(n===3)combustivel();if(n===4)manutencao()}
-for(var i=0;i<5;i++)(function(n){$("t"+n).onclick=function(){aba(n)}})(i);
+function aba(n){$("fab").hidden=n===1||n===5;window.scrollTo(0,0);for(var i=0;i<6;i++){$("p"+i).hidden=i!==n;$("t"+i).setAttribute("aria-selected",i===n)}
+if(n===0){resumo();alertas();destaques();metas()}if(n===2)historico();if(n===3)combustivel();if(n===4)manutencao();if(n===5)relatorio()}
+for(var i=0;i<6;i++)(function(n){$("t"+n).onclick=function(){aba(n)}})(i);
 
 $("salvar").onclick=function(){
 var v=parseFloat($("valor").value);
@@ -203,7 +226,13 @@ $("bars").innerHTML=dias.map(function(x){function b(v,c){var t=v>=1000?(v/1000).
 }
 
 function historico(){
-var l=dados.slice().sort(function(a,b){return b.dt.localeCompare(a.dt)||b.id-a.id});
+var sel=$("hmes").value,ms={};dados.forEach(function(x){ms[x.dt.slice(0,7)]=1});
+var mk=Object.keys(ms).sort().reverse();
+$("hmes").innerHTML='<option value="">Todos os meses</option>'+mk.map(function(k){return '<option value="'+k+'">'+nmes(k)+'</option>'}).join("");
+$("hmes").value=mk.indexOf(sel)>=0?sel:"";
+var l=dados.filter(function(x){return !$("hmes").value||x.dt.slice(0,7)===$("hmes").value}).sort(function(a,b){return b.dt.localeCompare(a.dt)||b.id-a.id});
+var tg=0,td=0;l.forEach(function(x){if(x.t==="g")tg+=x.v;else td+=x.v});
+$("htot").textContent=l.length?"Ganhos "+brl(tg)+" · Despesas "+brl(td)+" · Saldo "+brl(tg-td):"";
 $("lista").innerHTML=l.length?l.map(function(x){
 var p=x.dt.split("-");
 return "<li><span>"+x.d+'<br><span class="mut">'+p[2]+"/"+p[1]+(x.k?" · "+x.k+" km":"")+(x.t==="g"&&x.h?" · "+x.h+" h":"")+(x.t==="g"&&x.c>1?" · "+x.c+" corridas":"")+'</span></span><span style="text-align:right"><span class="'+(x.t==="g"?"in":"out")+'">'+(x.t==="g"?"+":"−")+brl(x.v)+'</span><br>'+(isF(x.id)?'<button class="del" data-act="c" data-id="'+x.id+'">Editar em Combustível</button> ':'<button class="del" data-act="e" data-id="'+x.id+'">Editar</button> ')+'<button class="del" data-id="'+x.id+'">Excluir</button></span></li>'}).join(""):'<li class="mut">Nenhum lançamento ainda. Vá em Lançar e registre sua primeira corrida.</li>';
@@ -299,7 +328,7 @@ c.innerHTML=s+"</ul>";c.hidden=false}
 try{var th=localStorage.getItem("rotacerta:tema");if(th)document.documentElement.setAttribute("data-theme",th)}catch(e){}
 $("tema").onclick=function(){var cur=document.documentElement.getAttribute("data-theme")||"dark";var nx=cur==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",nx);try{localStorage.setItem("rotacerta:tema",nx)}catch(e){}};
 $("fab").onclick=function(){aba(1)};
-function snap(){return JSON.stringify({app:"rota-certa",v:1,dados:dados,comb:comb,man:man})}
+function snap(){return JSON.stringify({app:"rota-certa",v:1,dados:dados,comb:comb,man:man,meta:meta})}
 $("bkx").onclick=function(){var t=snap(),m=$("bkm");$("bk").value=t;
 try{var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"application/json"}));a.download="rota-certa-backup-"+hoje()+".json";document.body.appendChild(a);a.click();a.remove()}catch(e){}
 try{navigator.clipboard.writeText(t).then(function(){m.textContent="Backup gerado e copiado. Cole em um arquivo de texto para guardar."},function(){m.textContent="Backup gerado no campo acima. Copie o texto e guarde."})}catch(e){m.textContent="Backup gerado no campo acima. Copie o texto e guarde."}};
@@ -311,11 +340,42 @@ var di=ids(dados),ci=ids(comb);
 o.dados.forEach(function(x){if(x&&typeof x.id==="number"&&!di[x.id]&&typeof x.v==="number"&&(x.t==="g"||x.t==="d")&&typeof x.dt==="string"&&re.test(x.dt)&&typeof x.d==="string"){x.d=x.d.replace(/[<>&]/g,"");x.k=Number(x.k)||0;dados.push(x);n++}});
 o.comb.forEach(function(x){if(x&&typeof x.id==="number"&&!ci[x.id]&&typeof x.l==="number"&&typeof x.v==="number"&&typeof x.o==="number"&&typeof x.dt==="string"&&re.test(x.dt))comb.push(x)});
 if(o.man&&Array.isArray(o.man.itens)){var mi=ids(man.itens);o.man.itens.forEach(function(x){if(x&&typeof x.id==="number"&&!mi[x.id]&&typeof x.n==="string"&&typeof x.iv==="number"&&typeof x.u==="number")man.itens.push(x)});if(!man.odo&&typeof o.man.odo==="number"){man.odo=o.man.odo;man.at=o.man.at}}
+if(o.meta&&!meta.d&&!meta.m){meta.d=Number(o.meta.d)||0;meta.m=Number(o.meta.m)||0;salvarT()}
 salvar();salvarC();salvarM();historico();
 m.textContent="Importado: "+n+" lançamento(s) novo(s). Os registros que já existiam foram mantidos."}
 $("bki").onclick=function(){impTxt($("bk").value)};
 $("bkf").onchange=function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){impTxt(String(r.result))};r.readAsText(f)};
-resumo();alertas();destaques();
+function nmes(k){var p=k.split("-"),s=new Date(+p[0],+p[1]-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});return s.charAt(0).toUpperCase()+s.slice(1)}
+$("hmes").onchange=function(){historico()};
+var KT="rotacerta:meta:v1",meta={d:0,m:0};
+try{var mt=JSON.parse(localStorage.getItem(KT)||"null");if(mt)meta={d:Number(mt.d)||0,m:Number(mt.m)||0}}catch(e){}
+function salvarT(){try{localStorage.setItem(KT,JSON.stringify(meta))}catch(e){}}
+function barra(t,g,m){if(!(m>0))return "";var p=g/m*100;return '<div>'+t+': <b>'+brl(g)+'</b> <span class="mut">de '+brl(m)+' · '+Math.round(p)+'%</span></div><div class="pg'+(p>=100?' ok':'')+'"><i style="width:'+Math.min(p,100).toFixed(1)+'%"></i></div>'}
+function metas(){var h=hoje(),gd=0,gm=0;dados.forEach(function(x){if(x.t!=="g")return;if(x.dt===h)gd+=x.v;if(x.dt.slice(0,7)===h.slice(0,7))gm+=x.v});
+var s=barra("Hoje",gd,meta.d)+barra("No mês",gm,meta.m);
+$("mbars").innerHTML=s||'<p class="mut" style="margin:6px 0 0">Defina uma meta diária ou mensal para acompanhar seu progresso.</p>';
+$("medit").textContent=(meta.d>0||meta.m>0)?"Editar metas":"Definir metas"}
+$("medit").onclick=function(){var f=$("mform");f.hidden=!f.hidden;if(!f.hidden){$("md").value=meta.d||"";$("mm").value=meta.m||""}};
+$("msv").onclick=function(){meta.d=Math.max(0,num("md"));meta.m=Math.max(0,num("mm"));salvarT();$("mform").hidden=true;metas()};
+var repM="";
+function relatorio(){var ms={},G={},D={},tg=0,td=0,km=0,nc=0,hr=0;
+dados.forEach(function(x){ms[x.dt.slice(0,7)]=1});ms[hoje().slice(0,7)]=1;
+var mk=Object.keys(ms).sort().reverse();if(!repM||!ms[repM])repM=hoje().slice(0,7);
+$("hrm").innerHTML=mk.map(function(k){return '<option value="'+k+'">'+nmes(k)+'</option>'}).join("");$("hrm").value=repM;
+dados.forEach(function(x){if(x.dt.slice(0,7)!==repM)return;var c=x.d||"Sem categoria";
+if(x.t==="g"){tg+=x.v;G[c]=(G[c]||0)+x.v;km+=x.k;nc+=x.c!==undefined?x.c:(x.d==="Gorjeta"?0:1);hr+=x.h||0}else{td+=x.v;D[c]=(D[c]||0)+x.v}});
+function cel(t,v){return '<div><span class="mut">'+t+'</span><b>'+v+'</b></div>'}
+function lin(O,tot,cl,bc){var k=Object.keys(O).sort(function(a,b){return O[b]-O[a]});if(!k.length)return '<li class="mut">Sem lançamentos neste mês.</li>';return k.map(function(c){var p=tot?O[c]/tot*100:0;return '<li style="flex-direction:column;gap:4px"><span style="display:flex;justify-content:space-between;gap:10px"><span>'+esc(c)+'</span><span class="'+cl+'">'+brl(O[c])+' · '+p.toFixed(0)+'%</span></span><span class="pg '+bc+'" style="margin:0"><i style="width:'+p.toFixed(1)+'%"></i></span></li>'}).join("")}
+$("rtit").textContent="Relatório de "+nmes(repM);
+$("rres").innerHTML=cel("Ganhos",brl(tg))+cel("Despesas",brl(td))+cel("Lucro",brl(tg-td))+cel("Km rodados",km?km.toLocaleString("pt-BR")+" km":"–")+cel("Corridas",nc||"–")+cel("Horas trabalhadas",hr?hr.toLocaleString("pt-BR",{maximumFractionDigits:1})+" h":"–");
+$("rgt").textContent=tg?"Total "+brl(tg):"";$("rdt").textContent=td?"Total "+brl(td):"";
+$("rg").innerHTML=lin(G,tg,"in","");$("rd").innerHTML=lin(D,td,"out","r")}
+$("brel").onclick=function(){repM=hoje().slice(0,7);aba(5)};
+$("brel2").onclick=function(){repM=$("hmes").value||hoje().slice(0,7);aba(5)};
+$("hrm").onchange=function(){repM=this.value;relatorio()};
+$("rimp").onclick=function(){window.print()};
+$("rvolta").onclick=function(){aba(0)};
+resumo();alertas();destaques();metas();
 })();
 </script>
 </body>
