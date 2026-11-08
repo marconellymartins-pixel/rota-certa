@@ -73,7 +73,6 @@ li:last-child{border:0}
 <button role="tab" id="t4" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L4 16.7 7.3 20l5.3-5.3a4 4 0 0 0 5.1-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span>Manutenção</span></button>
 <button role="tab" id="t2" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span>Histórico</span></button>
 <button role="tab" id="t5" aria-selected="false" hidden></button>
-<button role="tab" id="t6" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15v-4m4 4V7m4 8V9m4 6V4"/></svg><span>Financeiro</span></button>
 </div>
 
 <section id="p0">
@@ -193,29 +192,6 @@ li:last-child{border:0}
 <button class="go noprint" id="rimp">Imprimir ou salvar em PDF</button>
 <button class="go sec noprint" id="rvolta" style="margin-top:10px">Voltar ao Resumo</button>
 </section>
-<section id="p6" hidden>
- <div class="card">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>Controle financeiro</b><span class="mut" style="font-size:12px">Integrado aos lançamentos do Rota Certa</span></div>
-  <label for="finMes">Período</label><select id="finMes"><option value="">Todo o período</option></select>
-  <div class="grid" style="margin-top:14px">
-   <div><span class="mut">Ganhos</span><b id="finGan" class="in">R$ 0,00</b></div>
-   <div><span class="mut">Despesas</span><b id="finDes" class="out">R$ 0,00</b></div>
-   <div><span class="mut">Saldo do período</span><b id="finSaldo">R$ 0,00</b></div>
-   <div><span class="mut">Lançamentos</span><b id="finQtd">0</b></div>
-  </div>
- </div>
- <div class="card"><b>Despesas por categoria</b><div id="finCats" style="margin-top:10px"><span class="mut">Nenhuma despesa no período.</span></div></div>
- <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>Movimentações</b><span class="mut" id="finResumoLista"></span></div><ul id="finLista" style="margin-top:8px"><li class="mut">Nenhum lançamento encontrado.</li></ul></div>
- <div class="card noprint">
-  <b>Importar e exportar</b>
-  <p class="mut" style="font-size:13px">Importe arquivos CSV ou OFX. Os registros serão adicionados ao histórico e sincronizados com sua conta.</p>
-  <input id="finArquivo" type="file" accept=".csv,.ofx,.txt" style="width:100%;margin:8px 0">
-  <button class="go" id="finImportar">Importar arquivo</button>
-  <button class="go sec" id="finExportar" style="margin-top:8px">Exportar movimentações CSV</button>
-  <button class="go sec" id="finPdf" style="margin-top:8px">Imprimir / salvar relatório em PDF</button>
-  <p id="finMsg" class="mut" role="status" style="font-size:12px"></p>
- </div>
-</section>
 <footer class="rodape">
 <div class="rb"><svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f5b800"/><path d="M12 28 L15 5 H17 L20 28Z" fill="#17262e"/><path d="M16 8v4M16 15v4M16 22v3" stroke="#f5b800" stroke-width="1.6"/></svg><div><b>Rota Certa</b><span class="mut">Versão V1.0</span></div></div>
 <div class="rc"><span>© 2026 Rota Certa</span><span class="mut">Todos os direitos reservados.</span></div>
@@ -233,9 +209,9 @@ var OPC={g:["Corrida app","Corrida particular","Gorjeta"],d:["Combustível","Man
 function opcoes(){$("desc").innerHTML=OPC[$("tipo").value].map(function(o){return "<option>"+o+"</option>"}).join("");var dd=$("tipo").value==="d";$("gextra").hidden=dd;$("kmwrap").hidden=dd;$("vrow").style.gridTemplateColumns=dd?"1fr":""}
 $("tipo").onchange=opcoes;opcoes();$("data").value=hoje();
 
-function aba(n){$("fab").hidden=n===1||n===5||n===6;window.scrollTo(0,0);for(var i=0;i<7;i++){$("p"+i).hidden=i!==n;$("t"+i).setAttribute("aria-selected",i===n)}
-if(n===0){resumo();alertas();destaques();metas()}if(n===2)historico();if(n===3)combustivel();if(n===4)manutencao();if(n===5)relatorio();if(n===6)financeiro()}
-for(var i=0;i<7;i++)(function(n){$("t"+n).onclick=function(){aba(n)}})(i);
+function aba(n){$("fab").hidden=n===1||n===5;window.scrollTo(0,0);for(var i=0;i<6;i++){$("p"+i).hidden=i!==n;$("t"+i).setAttribute("aria-selected",i===n)}
+if(n===0){resumo();alertas();destaques();metas()}if(n===2)historico();if(n===3)combustivel();if(n===4)manutencao();if(n===5)relatorio()}
+for(var i=0;i<6;i++)(function(n){$("t"+n).onclick=function(){aba(n)}})(i);
 
 $("salvar").onclick=function(){
 var v=parseFloat($("valor").value);
@@ -246,26 +222,6 @@ if(editD){dados.forEach(function(x){if(String(x.id)===String(editD)){x.t=nv.t;x.
 nv.id=Date.now();dados.push(nv);
 salvar();$("valor").value="";$("kmi").value="";$("nc").value="";$("nh").value="";$("msg").textContent="Lançamento salvo.";
 };
-
-function financeiro(){
- var sel=$("finMes").value,meses={};dados.forEach(function(x){if(x.dt)meses[x.dt.slice(0,7)]=1});
- var chaves=Object.keys(meses).sort().reverse();
- $("finMes").innerHTML='<option value="">Todo o período</option>'+chaves.map(function(k){return '<option value="'+k+'">'+nmes(k)+'</option>'}).join('');
- $("finMes").value=chaves.indexOf(sel)>=0?sel:"";
- var lista=dados.filter(function(x){return !$("finMes").value||x.dt.slice(0,7)===$("finMes").value}).sort(function(a,b){return b.dt.localeCompare(a.dt)||Number(b.id)-Number(a.id)});
- var g=0,d=0,cats={},i;lista.forEach(function(x){if(x.t==="g")g+=Number(x.v)||0;else{d+=Number(x.v)||0;var c=x.d||"Outros";cats[c]=(cats[c]||0)+(Number(x.v)||0)}});
- $("finGan").textContent=brl(g);$("finDes").textContent=brl(d);$("finSaldo").textContent=brl(g-d);$("finSaldo").style.color=g-d>=0?"var(--grn)":"var(--red)";$("finQtd").textContent=String(lista.length);
- var ck=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a]}),max=d||1;
- $("finCats").innerHTML=ck.length?ck.map(function(k){var pct=cats[k]/max*100;return '<div style="margin:9px 0"><div style="display:flex;justify-content:space-between;gap:8px;font-size:14px"><span>'+esc(k)+'</span><b>'+brl(cats[k])+'</b></div><div class="pg r"><i style="width:'+pct.toFixed(1)+'%"></i></div></div>'}).join(''):'<span class="mut">Nenhuma despesa no período.</span>';
- $("finResumoLista").textContent=lista.length?lista.length+" registro(s)":"";
- $("finLista").innerHTML=lista.length?lista.map(function(x){var p=(x.dt||"").split('-');return '<li><span>'+esc(x.d||"Lançamento")+'<br><span class="mut">'+(p.length===3?p[2]+"/"+p[1]+"/"+p[0]:"")+(x.k?" · "+x.k+" km":"")+'</span></span><b class="'+(x.t==="g"?"in":"out")+'">'+(x.t==="g"?"+":"−")+brl(Number(x.v)||0)+'</b></li>'}).join(''):'<li class="mut">Nenhum lançamento encontrado.</li>';
-}
-$("finMes").onchange=financeiro;
-function parseFinCSV(txt){var lines=txt.replace(/^\uFEFF/,'').split(/\r?\n/).filter(function(x){return x.trim()});if(!lines.length)return [];var sep=lines[0].indexOf(';')>=0?';':',';return lines.slice(1).map(function(line){var a=line.split(sep).map(function(x){return x.trim().replace(/^"|"$/g,'').replace(/""/g,'"')});return a}).filter(function(a){return a.length>=3})}
-function parseFinOFX(txt){var out=[],blocks=txt.match(/<STMTTRN>[\s\S]*?<\/STMTTRN>/gi)||[];blocks.forEach(function(b){function get(tag){var m=b.match(new RegExp('<'+tag+'>([^<\\r\\n]+)','i'));return m?m[1].trim():''}var raw=get('TRNAMT'),v=Math.abs(parseFloat(raw));if(!v)return;var dt=get('DTPOSTED').slice(0,8),date=dt.length===8?dt.slice(0,4)+'-'+dt.slice(4,6)+'-'+dt.slice(6,8):hoje();out.push({t:parseFloat(raw)>=0?'g':'d',v:v,k:0,d:get('NAME')||get('MEMO')||'Importado OFX',dt:date})});return out}
-$("finImportar").onclick=async function(){var f=$("finArquivo").files[0],m=$("finMsg");if(!f){m.textContent='Selecione um arquivo CSV ou OFX.';return}try{var txt=await f.text(),rows=[],ext=f.name.toLowerCase().split('.').pop();if(ext==='ofx'){rows=parseFinOFX(txt)}else if(ext==='csv'||ext==='txt'){var a=parseFinCSV(txt);rows=a.map(function(r){var date=r[0],desc=r[1]||'Importado CSV',val=String(r[2]||'').replace(/R\$|\s/g,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(',','.');var v=parseFloat(val);if(!isFinite(v)||!v)return null;var iso=date;if(/^\d{2}\/\d{2}\/\d{4}$/.test(date)){var q=date.split('/');iso=q[2]+'-'+q[1]+'-'+q[0]}if(!/^\d{4}-\d{2}-\d{2}$/.test(iso))iso=hoje();return {t:v>=0?'g':'d',v:Math.abs(v),k:0,d:desc,dt:iso}}).filter(Boolean)}else{m.textContent='Formato ainda não suportado nesta etapa. Use CSV ou OFX.';return}if(!rows.length){m.textContent='Nenhuma movimentação válida encontrada. Confira as colunas do arquivo.';return}rows.forEach(function(x){x.id=Date.now()+Math.floor(Math.random()*1000000);dados.push(x)});salvar();financeiro();m.textContent=rows.length+' movimentação(ões) importada(s) com sucesso.'}catch(e){m.textContent='Falha ao importar: '+e.message}};
-$("finExportar").onclick=function(){var rows=[['tipo','data','descricao','valor','km']];dados.forEach(function(x){rows.push([x.t==='g'?'ganho':'despesa',x.dt,x.d,x.v,x.k||0])});var csv='\uFEFF'+rows.map(function(r){return r.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'}).join(';')}).join('\r\n');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='rota-certa-financeiro.csv';a.click();URL.revokeObjectURL(a.href)};
-$("finPdf").onclick=function(){window.print()};
 
 function resumo(){
 var g=0,d=0,k=0,nc=0,hr=0,gH=0,gK=0;
