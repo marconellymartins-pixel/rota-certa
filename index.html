@@ -11,7 +11,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="light"]{--bg:#eceee8;--card:#fbfbf8;--ink:#17262e;--mut:#5d6b72;--line:#d3d8d0;--grn:#0e6b4f;--red:#b83c2a}
 *{box-sizing:border-box}
 html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 Archivo,system-ui,sans-serif;max-width:520px;margin-inline:auto;padding:16px 16px 150px;display:flex;flex-direction:column;min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+body:not(.authed)>:not(#authGate){visibility:hidden}body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 Archivo,system-ui,sans-serif;max-width:520px;margin-inline:auto;padding:16px 16px 150px;display:flex;flex-direction:column;min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
 h1{font-size:26px;font-weight:800;margin:4px 0 14px;letter-spacing:-.01em}.top{display:flex;align-items:center;gap:10px;margin:4px 0 14px}.top h1{margin:0}.brand{flex:1;display:flex;flex-direction:column;gap:2px;line-height:1.1}.brand .mut{font-size:13px}#tema{padding:10px 14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:600 15px Archivo,sans-serif}
 .road{height:6px;background:repeating-linear-gradient(90deg,var(--yel) 0 22px,transparent 22px 36px);margin:0 0 16px;border-radius:3px}
 .tabs{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:496px;margin:0 auto;display:flex;gap:2px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 8px 24px rgba(23,38,46,.14);z-index:20}
@@ -49,10 +49,23 @@ li:last-child{border:0}
 @media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact}:root,:root[data-theme]{--bg:#fff;--card:#fff;--ink:#000;--mut:#444;--line:#bbb;--grn:#0a7a55;--red:#b3261e}html,body{background:#fff!important}body{padding:0;max-width:none;min-height:0}.tabs,#fab,.noprint,.road,#tema,.rodape{display:none!important}.card{box-shadow:none;break-inside:avoid}}
 [hidden]{display:none!important}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 </head>
 <body>
+<div id="authGate" style="position:fixed;inset:0;z-index:1000;background:#0a1219;color:#f1f3ee;display:flex;align-items:center;justify-content:center;padding:22px;font-family:Archivo,system-ui,sans-serif">
+ <div style="width:100%;max-width:420px;background:#13232c;border:1px solid #274050;border-radius:18px;padding:24px;box-shadow:0 12px 40px #0008">
+  <div style="font-size:24px;font-weight:800;margin-bottom:4px">Rota Certa</div><div style="color:#8fa3ad;margin-bottom:20px">Acesse sua conta para sincronizar seus dados.</div>
+  <label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="username" placeholder="seu@email.com" style="width:100%;padding:14px;border:1px solid #274050;border-radius:8px;background:#0a1219;color:#fff;font:16px Arial">
+  <label for="authPass">Senha</label><input id="authPass" type="password" autocomplete="current-password" placeholder="Sua senha" style="width:100%;padding:14px;border:1px solid #274050;border-radius:8px;background:#0a1219;color:#fff;font:16px Arial">
+  <button id="authLogin" style="width:100%;margin-top:16px;padding:15px;border:0;border-radius:8px;background:#f5b800;color:#17262e;font-weight:800;font-size:17px">Entrar</button>
+  <p id="authMsg" role="status" style="color:#8fa3ad;font-size:14px;line-height:1.4"></p>
+  <p style="color:#8fa3ad;font-size:12px">O acesso é criado pelo administrador. Não há cadastro público.</p>
+ </div>
+</div>
 <div class="road" aria-hidden="true"></div>
-<header class="top"><svg width="44" height="44" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f2b705"/><path d="M12 28 L15 5 H17 L20 28Z" fill="#17262e"/><path d="M16 8v4M16 15v4M16 22v3" stroke="#f2b705" stroke-width="1.6"/></svg><div class="brand"><h1>Rota Certa</h1><span class="mut">Gestão do motorista</span></div><button id="tema" aria-label="Alternar tema claro e escuro">Tema</button></header>
+<header class="top"><svg width="44" height="44" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f2b705"/><path d="M12 28 L15 5 H17 L20 28Z" fill="#17262e"/><path d="M16 8v4M16 15v4M16 22v3" stroke="#f2b705" stroke-width="1.6"/></svg><div class="brand"><h1>Rota Certa</h1><span class="mut">Gestão do motorista</span></div><button id="tema" aria-label="Alternar tema claro e escuro">Tema</button><button id="sair" style="padding:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:600 14px Archivo,sans-serif">Sair</button></header><div id="syncStatus" class="mut" style="font-size:12px;margin:-8px 0 12px">Conectando...</div>
 <div class="tabs" role="tablist">
 <button role="tab" id="t0" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg><span>Resumo</span></button>
 <button role="tab" id="t1" aria-selected="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Lançar</span></button>
@@ -188,7 +201,7 @@ li:last-child{border:0}
 (function(){
 var KEY="rotacerta:v1",dados=[];
 try{dados=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){dados=[]}
-function salvar(){try{localStorage.setItem(KEY,JSON.stringify(dados))}catch(e){}}
+function salvar(){try{localStorage.setItem(KEY,JSON.stringify(dados))}catch(e){};cloudSave()}
 function $(i){return document.getElementById(i)}
 function brl(n){return n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 function hoje(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
@@ -245,7 +258,7 @@ if(isF(id)){comb=comb.filter(function(x){return String(x.id)!==id});salvarC()}
 dados=dados.filter(function(x){return String(x.id)!==id});salvar();historico()};
 var KC="rotacerta:comb:v1",comb=[];
 try{comb=JSON.parse(localStorage.getItem(KC)||"[]")}catch(e){comb=[]}
-function salvarC(){try{localStorage.setItem(KC,JSON.stringify(comb))}catch(e){}}
+function salvarC(){try{localStorage.setItem(KC,JSON.stringify(comb))}catch(e){};cloudSave()}
 function num(id){return parseFloat($(id).value)||0}
 var editC=null;
 $("fdata").value=hoje();
@@ -280,7 +293,7 @@ if(editC&&String(editC)===id)limpaC();
 comb=comb.filter(function(x){return String(x.id)!==id});dados=dados.filter(function(x){return String(x.id)!==id});salvarC();salvar();combustivel()};
 var KM="rotacerta:man:v1",man={odo:0,itens:[]};
 try{var sm=JSON.parse(localStorage.getItem(KM)||"null");if(sm&&sm.itens)man=sm}catch(e){}
-function salvarM(){try{localStorage.setItem(KM,JSON.stringify(man))}catch(e){}}
+function salvarM(){try{localStorage.setItem(KM,JSON.stringify(man))}catch(e){};cloudSave()}
 function odoAtual(){var fm=0,fi=0;comb.forEach(function(x){fm=Math.max(fm,x.o);fi=Math.max(fi,x.id)});if(man.odo>0&&(man.at||0)>fi)return man.odo;return Math.max(man.odo||0,fm)}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 $("mup").onclick=function(){var v=num("mo"),o=odoAtual();
@@ -349,7 +362,7 @@ function nmes(k){var p=k.split("-"),s=new Date(+p[0],+p[1]-1,1).toLocaleDateStri
 $("hmes").onchange=function(){historico()};
 var KT="rotacerta:meta:v1",meta={d:0,m:0};
 try{var mt=JSON.parse(localStorage.getItem(KT)||"null");if(mt)meta={d:Number(mt.d)||0,m:Number(mt.m)||0}}catch(e){}
-function salvarT(){try{localStorage.setItem(KT,JSON.stringify(meta))}catch(e){}}
+function salvarT(){try{localStorage.setItem(KT,JSON.stringify(meta))}catch(e){};cloudSave()}
 function barra(t,g,m){if(!(m>0))return "";var p=g/m*100;return '<div>'+t+': <b>'+brl(g)+'</b> <span class="mut">de '+brl(m)+' · '+Math.round(p)+'%</span></div><div class="pg'+(p>=100?' ok':'')+'"><i style="width:'+Math.min(p,100).toFixed(1)+'%"></i></div>'}
 function metas(){var h=hoje(),gd=0,gm=0;dados.forEach(function(x){if(x.t!=="g")return;if(x.dt===h)gd+=x.v;if(x.dt.slice(0,7)===h.slice(0,7))gm+=x.v});
 var s=barra("Hoje",gd,meta.d)+barra("No mês",gm,meta.m);
@@ -376,6 +389,24 @@ $("hrm").onchange=function(){repM=this.value;relatorio()};
 $("rimp").onclick=function(){window.print()};
 $("rvolta").onclick=function(){aba(0)};
 resumo();alertas();destaques();metas();
+window.rotaSnapshot=function(){return {app:"rota-certa",v:1,dados:dados,comb:comb,man:man,meta:meta}};
+window.rotaApplyCloud=function(o){if(!o||o.app!=="rota-certa"||!Array.isArray(o.dados)||!Array.isArray(o.comb))throw new Error("Dados da nuvem inválidos");dados=o.dados;comb=o.comb;man=o.man||man;meta=o.meta||meta;localStorage.setItem(KEY,JSON.stringify(dados));localStorage.setItem(KC,JSON.stringify(comb));localStorage.setItem(KM,JSON.stringify(man));localStorage.setItem(KT,JSON.stringify(meta));resumo();alertas();destaques();metas();historico();combustivel();manutencao()};
+})();
+</script>
+<script>
+(function(){
+ const cfg={apiKey:"AIzaSyBEBIOgGhPHHhhCUp3YmEHN5rGzW3SWfSk",authDomain:"rota-certa-462d3.firebaseapp.com",projectId:"rota-certa-462d3",storageBucket:"rota-certa-462d3.firebasestorage.app",messagingSenderId:"288162102057",appId:"1:288162102057:web:5661577850ab44948ed538"};
+ const msg=document.getElementById('authMsg'),gate=document.getElementById('authGate'),status=document.getElementById('syncStatus');
+ let auth,db,user=null,ready=false,timer=null,saving=false;
+ function say(t){if(msg)msg.textContent=t}
+ function statusText(t){if(status)status.textContent=t}
+ function cloudSave(){if(!user||!ready)return;clearTimeout(timer);timer=setTimeout(async()=>{if(saving){cloudSave();return}try{saving=true;statusText('Sincronizando...');await db.doc('users/'+user.uid+'/app/state').set({...window.rotaSnapshot(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});statusText('Sincronizado com a nuvem');}catch(e){statusText('Falha na sincronização: '+(e.code||e.message));}finally{saving=false}},700)}
+ window.cloudSave=cloudSave;
+ try{firebase.initializeApp(cfg);auth=firebase.auth();db=firebase.firestore()}catch(e){say('Não foi possível iniciar o Firebase. Confira a conexão e a configuração.');return}
+ document.getElementById('authLogin').onclick=async()=>{const email=document.getElementById('authEmail').value.trim(),pass=document.getElementById('authPass').value;if(!email||!pass){say('Informe e-mail e senha.');return}say('Entrando...');try{await auth.signInWithEmailAndPassword(email,pass)}catch(e){say(e.code==='auth/invalid-credential'?'E-mail ou senha incorretos.':e.message)}};
+ document.getElementById('authPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('authLogin').click()});
+ document.getElementById('sair').onclick=()=>auth.signOut();
+ auth.onAuthStateChanged(async u=>{user=u;ready=false;if(!u){gate.style.display='flex';document.body.classList.remove('authed');statusText('');return}say('');statusText('Verificando sua conta...');try{const ref=db.doc('users/'+u.uid+'/app/state'),snap=await ref.get();if(snap.exists){window.rotaApplyCloud(snap.data());statusText('Dados carregados da nuvem');}else{await ref.set({...window.rotaSnapshot(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});statusText('Primeira cópia enviada à nuvem');}ready=true;let firstSnapshot=true;ref.onSnapshot(doc=>{if(firstSnapshot){firstSnapshot=false;return}if(doc.exists&&ready){try{window.rotaApplyCloud(doc.data());statusText('Sincronizado em tempo real');}catch(err){statusText('Erro ao atualizar dados da nuvem');}}},err=>statusText('Erro na sincronização: '+(err.code||err.message)));gate.style.display='none';document.body.classList.add('authed');}catch(e){ready=false;gate.style.display='flex';say('Não foi possível acessar os dados: '+(e.code||e.message));statusText('Falha ao conectar');await auth.signOut().catch(()=>{});}});
 })();
 </script>
 </body>
